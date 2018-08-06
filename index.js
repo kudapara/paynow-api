@@ -40,9 +40,6 @@ app.get('/', async (req, res) => {
   }
 })
 
-// Be sure to delete this line
-app.get('/env', (req, res) => res.json(process.env))
-
 app.post('/pay', async (req, res) => {
   console.log('recieved payment request')
   const { amount, authemail } = req.body
