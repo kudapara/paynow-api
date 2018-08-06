@@ -1,0 +1,9 @@
+{
+  "name": "paynow",
+  "alias": "paynow.now.sh",
+  "env": {
+    "INTEGRATION_KEY": "@integration-key",
+    "ID": "@id",
+    "MONGO_URI": "@mongo-uri"
+  }
+}
