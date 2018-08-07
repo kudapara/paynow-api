@@ -50,7 +50,7 @@ app.post('/pay', async (req, res) => {
     amount,
     authemail, // the email of the user
     additionalinfo: 'You are about to pay for your subscriptions',
-    returnurl: 'http://localhost:8080', // where the results of the transaction will be posted
+    returnurl: 'https://paynow.netlify.com', // where the results of the transaction will be posted
     resulturl: 'https://paynow.now.sh', // where the results of the transaction will be posted
     hash: "",
   }
