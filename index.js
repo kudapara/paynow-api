@@ -14,12 +14,12 @@ const hash = require('./hash')
 const transactions = require('./transactions')
 
 app.post('/', (req, res) => {
-  console.log('recieved transaction')
+  console.log('recieved transaction from paynow')
   const transaction = new transactions(req.body);
   transaction.saveTransactionEvent()
     .then(data => {
       // transaction saved, perhaps pass it on for processinf
-      console.log('transaction saved')
+      console.log('transaction saved in database')
       res.status(200).end()
     })
     .catch(error => {
@@ -32,8 +32,10 @@ app.post('/', (req, res) => {
 
 app.get('/', async (req, res) => {
   try {
+    console.log('Getting a list of all transactions')
     const transaction = new transactions();
     const data = await transaction.getAllTransactionEvents()
+    console.log('Successfully got a list of transactions')
     res.status(200).json({ data })
   } catch (error) {
     res.status(500).json({ error })
@@ -60,9 +62,12 @@ app.post('/pay', async (req, res) => {
   console.log(fields)
   // initiate the payment request
   try {
+    console.log('Initiating payment request')
     const response = await axios.post('/initiatetransaction', qs.stringify(fields))
+    console.log('Successfully initiated a payment')
     res.status(200).json(qs.parse(response.data))
   } catch (error) {
+    console.log('Error encounted when initiating request')
     res.status(500).json(qs.parse(error.data))
   }
 
