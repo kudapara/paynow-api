@@ -13,7 +13,6 @@ const axios = require('./axios')
 const hash = require('./hash')
 const transactions = require('./transactions')
 
-console.log(process.env)
 app.post('/', (req, res) => {
   console.log('recieved transaction from paynow')
   const transaction = new transactions(req.body);
