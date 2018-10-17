@@ -10,7 +10,7 @@ app.use(bp.urlencoded({ extended: true }))
 app.use(cors())
 
 const axios = require('./axios')
-const hash = require('./hash')
+const sha512 = require('./sha512')
 const transactions = require('./transactions')
 
 app.post('/', (req, res) => {
@@ -58,7 +58,7 @@ app.post('/pay', async (req, res) => {
   }
 
   // create a hash of the fields
-  fields.hash = hash(fields)
+  fields.hash = sha512.hash(fields)
   console.log(fields)
   // initiate the payment request
   try {
