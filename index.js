@@ -77,9 +77,14 @@ app.post('/', async (req, res) => {
       payload: req.body,
       timestamp: Date.now()
     }
+    console.log(transactionEvent)
     const transaction = new transactions(transactionEvent);
+    console.log('attempting to save the tranavctione event')
     await transaction.saveTransactionEvent()
+    console.log('success fully saved transaction event')
+    console.log('Attempting to update account balances')
     await transaction.updateAccountBalances(transactionFromPaynow.reference)
+    console.log('success fully updates balances')
     // transaction saved, perhaps pass it on for processinf
     console.log('transaction saved in database')
     res.status(200).end()
