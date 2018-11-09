@@ -135,9 +135,9 @@ app.post('/pay/mobile', async (req, res) => {
   }
   
   log('creating a new paynow instance')
-  const paynow = new Paynow(4176, "04ab375d-861b-40b9-8ec0-d0b605a0982f");
+  const paynow = new Paynow(4176, process.env.PAYNOW_INTEGRATION_KEY);
   // Set return and result urls
-  paynow.resultUrl = 'https://d70b8130.ngrok.io';
+  paynow.resultUrl = 'https://paynow.now.sh';
   paynow.returnUrl = 'https://paynow.netlify.com';
 
   log('validating mobile money providers')
@@ -176,7 +176,7 @@ app.post('/pay/paynow', async (req, res) => {
     return res.status(400).json({ message: 'You need to have at least one item in cart' })
   }
 
-  const paynow = new Paynow(4176, "04ab375d-861b-40b9-8ec0-d0b605a0982f");
+  const paynow = new Paynow(4176, process.env.PAYNOW_INTEGRATION_KEY);
   // Set return and result urls
   paynow.resultUrl = 'https://paynow.now.com';
   paynow.returnUrl = 'https://paynow.netlify.com';
