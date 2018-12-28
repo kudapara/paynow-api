@@ -183,7 +183,7 @@ app.post('/pay/mobile', async (req, res) => {
   } catch (error) {
     log('encounterd an error initiating a transaction')
     console.log(error)
-    res.status(error.status || 500).json({ error })
+    res.status(500).json({ error })
   }
 })
 
