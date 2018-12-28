@@ -176,7 +176,9 @@ app.post('/pay/mobile', async (req, res) => {
 
   try {
     log('initiating mobile transaction')
-    const response = initiateMobileTransaction(paynow, payment, { products, mobileNumber, mobileMoneyProvider, authemail })
+    const response = await initiateMobileTransaction(paynow, payment, { products, mobileNumber, mobileMoneyProvider, authemail })
+    console.log('response from initiateMobileTransaction')
+    console.log(response)
     res.json(response)
   } catch (error) {
     log('encounterd an error initiating a transaction')
