@@ -1,0 +1,1 @@
+module.exports.complock = require('./complock')
