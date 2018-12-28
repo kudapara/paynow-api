@@ -6,10 +6,6 @@ const moment = require('moment')
 const transactionsModel = require('../../transactions')
 const complockModel = require('./model')
 
-// Controller
-const complockConroller = require('./controller');
-const { catchErrors } = require('../../handlers')
-
 /**
  * For any custom routes specific to the payment responder
  */
