@@ -13,11 +13,21 @@ const axios = require('./axios')
 const sha512 = require('./sha512')
 const uuidv4 = require('uuid/v4')
 const transactions = require('./transactions')
+const paymentResponders = require('./payment-responders')
 
 const Paynow = require('paynow')
 const log = console.log
 
+// Util functions
 const toKebabCasing = (text = '') => text.toLowerCase().split(' ').join('-')
+
+/**
+ * Register the routes of payment responders
+ */
+Object
+  .keys(paymentResponders)
+  .forEach(responder => app.use(`/${responder}`, paymentResponders[responder].routes))
+
 /**
  * Recieving transaction feedback from paynow
  */
@@ -30,7 +40,7 @@ app.post('/', async (req, res) => {
       reference: transactionFromPaynow.reference,
       type: 'paynow',
       status: `transaction-${toKebabCasing(transactionFromPaynow.status)}`,
-      payload: req.body,
+      payload: transactionFromPaynow,
       timestamp: Date.now()
     }
     console.log(transactionEvent)
@@ -42,12 +52,20 @@ app.post('/', async (req, res) => {
     await transaction.updateAccountBalances(transactionFromPaynow.reference)
     console.log('success fully updates balances')
     // transaction saved, perhaps pass it on for processin
+    if (
+      req.query.paymentResponder
+      && paymentResponders[req.query.paymentResponder]
+      && typeof paymentResponders[req.query.paymentResponder].onSuccess == 'function'
+    ){
+      const response = await paymentResponders[req.query.paymentResponder].onSuccess(transactionEvent)
+      return res.end('Thanks Paynow 👍')
+    }
     console.log('transaction saved in database')
     res.status(200).end()
   } catch (error) {
     console.log('errorr==========')
     console.log(error)
-    res.status(500).end()
+    res.status(500).end('Oops an error occured on my end 😢')
   }
 })
 
@@ -125,7 +143,7 @@ async function initiateWebTransaction (paynow, payment) {
 
 app.post('/pay/mobile', async (req, res) => {
   log('reached /pay/mobile')
-  const { products = [ { itemName: 'mouse', price: 4.0 } ], authemail, mobileNumber, mobileMoneyProvider }= req.body
+  const { products = [ { itemName: 'mouse', price: 4.0 } ], authemail, mobileNumber, mobileMoneyProvider, reference }= req.body
   // Check if there are any products in to be bought
 
   log('checking if there are products')
@@ -137,7 +155,7 @@ app.post('/pay/mobile', async (req, res) => {
   log('creating a new paynow instance')
   const paynow = new Paynow(4176, process.env.PAYNOW_INTEGRATION_KEY);
   // Set return and result urls
-  paynow.resultUrl = 'https://paynow.now.sh';
+  paynow.resultUrl = `https://paynow.now.sh?paymentResponder=${req.query.paymentResponder}`;
   paynow.returnUrl = 'https://paynow.netlify.com';
 
   log('validating mobile money providers')
@@ -149,7 +167,7 @@ app.post('/pay/mobile', async (req, res) => {
     return res.status(400).json({ message: 'Make sure you pay using either ecocash or onemoney' })
   }
 
-  const payment = paynow.createPayment(uuidv4(), authemail)
+  const payment = paynow.createPayment(reference || uuidv4(), authemail)
   // Add items to the payment list passing in the name of the item and it's price
   log('logging the products sent from the user')
   log(products)
