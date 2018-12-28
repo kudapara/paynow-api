@@ -4,9 +4,9 @@ const complockModel = require("./model");
  * Returns the last batch of tokens that are saved in the database
  */
 exports.getTokens = async function (req, res) {
-  const { emailAddress = '' } = req.params;
+  const { reference = '' } = req.params;
   const tokens = await complockModel
-    .findOne({ emailAddress })
+    .findOne({ reference })
     // Get the latest one
     .sort({ createdAt: -1 });
 

@@ -14,7 +14,7 @@ const { catchErrors } = require('../../handlers')
 /**
  * For any custom routes specific to the payment responder
  */
-router.get('/tokens/:emailAddress', catchErrors(complockConroller.getTokens));
+router.get('/tokens/:reference', catchErrors(complockConroller.getTokens));
 router.get('/ping-subscription/:reference', catchErrors(complockConroller.pingSubscription));
 exports.routes = router;
 
