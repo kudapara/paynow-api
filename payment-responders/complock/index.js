@@ -1,7 +1,6 @@
 // Npm dependancies
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
-const router = require('express').Router();
 
 // Models
 const transactionsModel = require('../../transactions')
@@ -14,9 +13,7 @@ const { catchErrors } = require('../../handlers')
 /**
  * For any custom routes specific to the payment responder
  */
-router.get('/tokens/:reference', catchErrors(complockConroller.getTokens));
-router.get('/ping-subscription/:reference', catchErrors(complockConroller.pingSubscription));
-exports.routes = router;
+exports.routes = require('./routes');
 
 /**
  * Signature function required for all the payment responders.
