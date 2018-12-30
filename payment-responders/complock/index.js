@@ -33,7 +33,7 @@ exports.onSuccess = async function(transaction) {
     const activation_token = jwt.sign({
       computer_name,
       exp: token_expiry_time.unix()
-    }, 'super-secret')
+    }, process.env.JWT_SECRET)
 
     return {
       computer_name,

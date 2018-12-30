@@ -3,6 +3,7 @@
   "alias": "paynow.now.sh",
   "env": {
     "PAYNOW_INTEGRATION_KEY": "@paynow-integration-key",
-    "PAYNOW_MONGO_URI": "@paynow-mongo-uri"
+    "PAYNOW_MONGO_URI": "@paynow-mongo-uri",
+    "JWT_SECRET": "@jwt-secret"
   }
 } 
