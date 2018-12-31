@@ -26,6 +26,7 @@ const AccountModel = mongoose.model('Account', new mongoose.Schema({
     reference: String,
     transactionType: String,
     date: Date,
+    amount: Number
   }
 }))
 
@@ -62,7 +63,8 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
           latestTransaction: {
             transactionType: 'debit',
             reference,
-            date: Date.now()
+            date: Date.now(),
+            amount: parseFloat(transaction.payload.amount)
           }
       });
     } else {
@@ -74,7 +76,8 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
           latestTransaction: {
             transactionType: 'debit',
             reference,
-            date: Date.now()
+            date: Date.now(),
+            amount: parseFloat(transaction.payload.amount)
           }
         })
       await newAccount.save();
@@ -88,7 +91,8 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
         latestTransaction: {
           transactionType: 'credit',
           reference,
-          date: Date.now()
+          date: Date.now(),
+          amount: parseFloat(transaction.payload.amount)
         }
       }
     );
