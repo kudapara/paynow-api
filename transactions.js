@@ -60,7 +60,7 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
         { emailAddress },
         { $inc: { totalContributed: parseFloat(transaction.payload.amount) },
           latestTransaction: {
-            transactionType: 'credit',
+            transactionType: 'debit',
             reference,
             date: Date.now()
           }
@@ -72,7 +72,7 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
           totalContributed: parseFloat(transaction.payload.amount),
           currentBalance: 0,
           latestTransaction: {
-            transactionType: 'credit',
+            transactionType: 'debit',
             reference,
             date: Date.now()
           }
@@ -86,7 +86,7 @@ TransactionSchema.methods.updateAccountBalances = async function (reference = ''
       { emailAddress: 'kgparadzayi@gmail.com' },
       { $inc: { currentBalance: parseFloat(transaction.payload.amount) },
         latestTransaction: {
-          transactionType: 'debit',
+          transactionType: 'credit',
           reference,
           date: Date.now()
         }
