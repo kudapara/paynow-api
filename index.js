@@ -212,7 +212,11 @@ app.post('/pay/paynow', async (req, res) => {
     const response = await initiateWebTransaction(payment)
     res.json(response)
   } catch (error) {
-    res.status(error.status || 500).json(error)
+    if (error.error === 'Insufficient balance') {
+      error.statusCode =  422
+    }
+
+    res.status(error.statusCode || 500).json(error)
   }
 })
 
