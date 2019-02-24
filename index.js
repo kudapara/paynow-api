@@ -169,6 +169,7 @@ app.post("/pay/mobile", async (req, res) => {
   const {
     products = [{ itemName: "mouse", price: 4.0 }],
     authemail,
+    meta = {},
     mobileNumber,
     mobileMoneyProvider,
     reference
@@ -216,7 +217,8 @@ app.post("/pay/mobile", async (req, res) => {
       products,
       mobileNumber,
       mobileMoneyProvider,
-      authemail
+      authemail,
+      ...meta
     });
     console.log("response from initiateMobileTransaction");
     console.log(response);
