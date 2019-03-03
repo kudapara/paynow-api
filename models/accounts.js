@@ -13,12 +13,13 @@ const accountsSchema = new mongoose.Schema({
 
 accountsSchema.statics.updateBalance = async function({
   emailAddress,
-  transaction
+  transaction,
+  increase = 1,
+  isSystemBalance = false
 }) {
   const account = await this.findOne({ emailAddress });
   console.log("done searching user");
   console.log(account);
-
   if (account) {
     console.log("found out account exists, update balance");
     // Update their account
@@ -26,8 +27,10 @@ accountsSchema.statics.updateBalance = async function({
       { emailAddress },
       {
         $inc: {
-          totalContributed: parseFloat(transaction.payload.amount),
-          currentBalance: parseFloat(transaction.payload.amount)
+          totalContributed: isSystemBalance
+            ? 0
+            : parseFloat(transaction.payload.amount),
+          currentBalance: increase * parseFloat(transaction.payload.amount)
         },
         latestTransaction: {
           transactionType: "debit",
