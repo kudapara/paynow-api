@@ -20,13 +20,17 @@ exports.routes = require("./routes");
  * It is invoked after a transaction has been paid.
  * It accepts the transaction object for the transaction-paid event.
  */
-exports.onSuccess = async function(transaction) {
-  // get the products from the database
-  const initialTransaction = await transactionsModel.findOne({
-    reference: transaction.reference,
-    status: "transaction-initiated"
-  });
-
+exports.onSuccess = async function(transaction, transactionType) {
+  let initialTransaction;
+  if (transaction.type == "in-app-purchase") {
+    initialTransaction = transaction;
+  } else {
+    // get the products from the database
+    initialTransaction = await transactionsModel.findOne({
+      reference: transaction.reference,
+      status: "transaction-initiated"
+    });
+  }
   // on success of printshop payment determine the type of transaction
   // customer topping up wallet, printshop paying reg fees, customer using up credits
 
@@ -35,7 +39,7 @@ exports.onSuccess = async function(transaction) {
 
   const { payload } = initialTransaction;
 
-  const fn = responseFunctions[payload.transactionType];
+  const fn = responseFunctions[transactionType || payload.transactionType];
 
   if (fn && typeof fn == "function") {
     await fn(initialTransaction);
