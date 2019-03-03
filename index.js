@@ -47,7 +47,7 @@ app.post("/", async (req, res) => {
   try {
     const transactionEvent = {
       reference: transactionFromPaynow.reference,
-      type: "paynow",
+      type: req.query.paymentMethod || "paynow",
       status: `transaction-${toKebabCasing(transactionFromPaynow.status)}`,
       payload: transactionFromPaynow,
       timestamp: Date.now()
@@ -71,7 +71,7 @@ app.post("/", async (req, res) => {
     ) {
       const response = await paymentResponders[
         req.query.paymentResponder
-      ].onSuccess(transactionEvent);
+      ].onSuccess(transactionEvent, req.query.transactionType);
       return res.end("Thanks Paynow 👍");
     }
     console.log("transaction saved in database");
