@@ -4,8 +4,11 @@ const moment = require("moment");
 const uuidv4 = require("uuid/v4");
 
 // Models
-const transactionsModel = require("../../transactions");
-const printshospsModel = require("./model");
+const transactionsModel = require("../../models/transactions");
+const accountsModel = require("../../models/accounts");
+
+// special case responders
+const responseFunctions = require("./utils/responseFunctions");
 
 /**
  * For any custom routes specific to the payment responder
@@ -24,39 +27,21 @@ exports.onSuccess = async function(transaction) {
     status: "transaction-initiated"
   });
 
-  // do some processing (create tokens),
+  // on success of printshop payment determine the type of transaction
+  // customer topping up wallet, printshop paying reg fees, customer using up credits
+
+  // how does printshop know how much to get (printjobs have boolean field, paidOut)
+  console.log("inside the printshops responder");
+
   const { payload } = initialTransaction;
-  const token_expiry_time = moment().add(30, "d");
 
-  const tokens = payload.products.map(computer => {
-    const printshopId = payload.printshopId;
-    const userId = payload.userId;
+  const fn = responseFunctions[payload.transactionType];
 
-    const activation_token = jwt.sign(
-      {
-        printshopId,
-        userId,
-        exp: token_expiry_time.unix()
-      },
-      process.env.JWT_SECRET
+  if (fn && typeof fn == "function") {
+    await fn(initialTransaction);
+  } else {
+    console.log(
+      "============== We could not process the incoming transactions ========================="
     );
-
-    return {
-      printshopId,
-      userId,
-      hasTokenBeenBurned: false,
-      tokenId: uuidv4(),
-      activation_token,
-      is_paid_for: true,
-      token_expiry_time,
-      token_paid_time: moment()
-    };
-  });
-
-  // save results to database
-  const savedTokens = await printshospsModel({
-    reference: transaction.reference,
-    emailAddress: initialTransaction.payload.user.authemail,
-    tokens
-  }).save();
+  }
 };
