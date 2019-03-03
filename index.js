@@ -15,7 +15,8 @@ const axios = require("./axios");
 const sha512 = require("./sha512");
 const uuidv4 = require("uuid/v4");
 const errorHandlers = require("./handlers");
-const transactions = require("./transactions");
+const transactions = require("./models/transactions");
+const accounts = require("./models/accounts");
 const paymentResponders = require("./payment-responders");
 
 const Paynow = require("paynow");
@@ -42,6 +43,7 @@ app.post("/", async (req, res) => {
   console.log("recieved transaction from paynow");
   const transactionFromPaynow = req.body;
   console.log(transactionFromPaynow);
+
   try {
     const transactionEvent = {
       reference: transactionFromPaynow.reference,
@@ -51,13 +53,13 @@ app.post("/", async (req, res) => {
       timestamp: Date.now()
     };
     console.log(transactionEvent);
+
     const transaction = new transactions(transactionEvent);
+
     console.log("attempting to save the tranavctione event");
     await transaction.saveTransactionEvent();
     console.log("success fully saved transaction event");
-    console.log("Attempting to update account balances");
-    await transaction.updateAccountBalances(transactionFromPaynow.reference);
-    console.log("success fully updates balances");
+
     // transaction saved, perhaps pass it on for processin
     console.log(req.query);
     console.log(paymentResponders[req.query.paymentResponder]);
@@ -96,7 +98,7 @@ app.get("/", async (req, res) => {
 async function initiateMobileTransaction(
   paynow,
   payment,
-  { products, mobileNumber, mobileMoneyProvider, authemail }
+  { products, mobileNumber, mobileMoneyProvider, authemail, meta }
 ) {
   log("send mobile payment to paynow");
   console.log(payment);
@@ -124,7 +126,8 @@ async function initiateMobileTransaction(
       payload: {
         products,
         transaction: response,
-        user: { mobileNumber, authemail }
+        user: { mobileNumber, authemail },
+        ...meta
       },
       timestamp: Date.now()
     };
@@ -175,7 +178,6 @@ app.post("/pay/mobile", async (req, res) => {
     reference
   } = req.body;
   // Check if there are any products in to be bought
-  console.log({ meta });
   log("checking if there are products");
   if (products.length === 0) {
     log("no products found");
@@ -218,7 +220,7 @@ app.post("/pay/mobile", async (req, res) => {
       mobileNumber,
       mobileMoneyProvider,
       authemail,
-      ...meta
+      meta
     });
     console.log("response from initiateMobileTransaction");
     console.log(response);
@@ -262,6 +264,18 @@ app.post("/pay/paynow", async (req, res) => {
     }
 
     res.status(error.statusCode || 500).json(error);
+  }
+});
+
+app.get("/accounts/:emailAddress", async (req, res) => {
+  try {
+    const emailAddress = req.params.emailAddress || "";
+    const account = await accounts.findOne({ emailAddress });
+    res.json(account);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "there was an error getting the account information" });
   }
 });
 
