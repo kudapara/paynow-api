@@ -11,7 +11,8 @@ const responseFunctions = {
     if (hasCustomerPaid.length > 0) {
       await accountsModel.updateBalance({
         emailAddress: transaction.payload.user.authemail,
-        transaction: hasCustomerPaid[0]
+        transaction: hasCustomerPaid[0],
+        increase: 1
       });
     } else {
       // no man there isn't any money put into the system
@@ -21,28 +22,23 @@ const responseFunctions = {
   customerPayingPrintShop: async transaction => {
     // 3. customer using credits - decrement balance,
     // incremend their totalContributed, increment my balance
-    const hasCustomerPaid = await transactionsModel.checkIfTransactionIsPaid(
-      transaction.reference
-    );
 
-    if (hasCustomerPaid.length > 0) {
-      const updateCustomerBalance = accountsModel.updateBalance({
-        emailAddress: transaction.payload.user.authemail,
-        payload: transaction.payload
-      });
+    const updateCustomerBalance = accountsModel.updateBalance({
+      emailAddress: transaction.payload.user.authemail,
+      transaction: transaction,
+      increase: -1
+    });
 
-      const updateSystemBalance = accountsModel.updateBalance({
-        emailAddress: "kgparadzayi@gmail.com",
-        payload: transaction.payload,
-        isSystemBalance: true
-      });
+    const updateSystemBalance = accountsModel.updateBalance({
+      emailAddress: "kgparadzayi@gmail.com",
+      transaction: transaction,
+      increase: 1,
+      isSystemBalance: true
+    });
 
-      const updateBalances = [updateCustomerBalance, updateSystemBalance];
+    const updateBalances = [updateCustomerBalance, updateSystemBalance];
 
-      await Promise.all(updateBalances);
-    } else {
-      // no man there isn't any money put into the system
-    }
+    await Promise.all(updateBalances);
   },
 
   printShopPayingUs: async transaction => {
