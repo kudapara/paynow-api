@@ -45,11 +45,21 @@ app.post("/", async (req, res) => {
   console.log(transactionFromPaynow);
 
   try {
+    // create a user for paynow responses
+    const user = req.body.paynowreference
+      ? {
+          user: { authemail: req.query.authemail }
+        }
+      : {};
+
     const transactionEvent = {
       reference: transactionFromPaynow.reference,
       type: req.query.paymentMethod || "paynow",
       status: `transaction-${toKebabCasing(transactionFromPaynow.status)}`,
-      payload: transactionFromPaynow,
+      payload: {
+        ...transactionFromPaynow,
+        ...user
+      },
       timestamp: Date.now()
     };
     console.log(transactionEvent);
@@ -127,6 +137,9 @@ async function initiateMobileTransaction(
         products,
         transaction: response,
         user: { mobileNumber, authemail },
+        amount: products.reduce((total, current) => {
+          return total + current.price;
+        }, 0),
         ...meta
       },
       timestamp: Date.now()
@@ -191,7 +204,7 @@ app.post("/pay/mobile", async (req, res) => {
   // Set return and result urls
   paynow.resultUrl = `https://paynow.now.sh?paymentResponder=${
     req.query.paymentResponder
-  }`;
+  }?authemail=${authemail}?paymentMethod=${mobileMoneyProvider}`;
   paynow.returnUrl = "https://paynow.netlify.com";
 
   log("validating mobile money providers");
@@ -292,6 +305,7 @@ app.get("/accounts/:emailAddress/transactions", async (req, res) => {
       .json({ message: "there was an error getting the account information" });
   }
 });
+
 // If that above routes didnt work, we 404 them and forward to error handler
 app.use(errorHandlers.notFound);
 
