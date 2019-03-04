@@ -279,6 +279,19 @@ app.get("/accounts/:emailAddress", async (req, res) => {
   }
 });
 
+app.get("/accounts/:emailAddress/transactions", async (req, res) => {
+  try {
+    const emailAddress = req.params.emailAddress || "";
+    const txs = await transactions.find({
+      "payload.user.authemail": emailAddress
+    });
+    res.json({ transactions: txs });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "there was an error getting the account information" });
+  }
+});
 // If that above routes didnt work, we 404 them and forward to error handler
 app.use(errorHandlers.notFound);
 
