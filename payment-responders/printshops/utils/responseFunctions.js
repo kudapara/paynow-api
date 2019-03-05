@@ -30,7 +30,7 @@ const responseFunctions = {
     });
 
     const updateSystemBalance = accountsModel.updateBalance({
-      emailAddress: "kgparadzayi@gmail.com",
+      emailAddress: transaction.payload.printShopEmail,
       transaction: transaction,
       increase: 1,
       isSystemBalance: true
