@@ -23,12 +23,14 @@ const responseFunctions = {
     // 3. customer using credits - decrement balance,
     // incremend their totalContributed, increment my balance
 
+    // reduce the customer's balance
     const updateCustomerBalance = accountsModel.updateBalance({
       emailAddress: transaction.payload.user.authemail,
       transaction: transaction,
       increase: -1
     });
 
+    // then increase the printshop's balance
     const updateSystemBalance = accountsModel.updateBalance({
       emailAddress: transaction.payload.printShopEmail,
       transaction: transaction,
