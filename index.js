@@ -204,7 +204,7 @@ app.post("/pay/mobile", async (req, res) => {
   // Set return and result urls
   paynow.resultUrl = `https://paynow.now.sh?paymentResponder=${
     req.query.paymentResponder
-  }?authemail=${authemail}?paymentMethod=${mobileMoneyProvider}`;
+  }&authemail=${authemail}&paymentMethod=${mobileMoneyProvider}`;
   paynow.returnUrl = "https://paynow.netlify.com";
 
   log("validating mobile money providers");
