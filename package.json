@@ -22,7 +22,7 @@
     "js-sha512": "^0.7.1",
     "jsonwebtoken": "^8.4.0",
     "mocha": "^5.2.0",
-    "moment": "^2.23.0",
+    "moment": "^2.29.4",
     "mongoose": "^5.2.12",
     "morgan": "^1.9.1",
     "paynow": "^1.0.3",
