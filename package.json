@@ -23,7 +23,7 @@
     "jsonwebtoken": "^8.4.0",
     "mocha": "^5.2.0",
     "moment": "^2.23.0",
-    "mongoose": "^5.2.12",
+    "mongoose": "^5.13.20",
     "morgan": "^1.9.1",
     "paynow": "^1.0.3",
     "uuid": "^3.3.2"
